@@ -15,7 +15,7 @@ It starts out "empty". Its most usual response is your last sentence's final wor
 
 Please find below a sample interaction. A few "commands" - like (DUMP) or entering SOME-SYMBOL are also implemented, in order to allow observation and manipulation of the environment.
 
-I recommend to run this in Chez Scheme as it really works there the fastest. Yes, it is slow. Yes, it DOES run for a LONG time before giving you a response, and it is NOT hanging. Eventually, it will produce a response.
+It is written in Scheme. I recommend to run this in Chez Scheme as it really works there the fastest. Yes, it is slow. Yes, it DOES run for a LONG time before giving you a response, and it is NOT hanging. Eventually, it will produce a response.
 
 ```
 
