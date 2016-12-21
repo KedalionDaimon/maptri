@@ -3,7 +3,7 @@ Gradual, non-directional logical triangulation system
 
 A NEW LOGICAL TRIANGULATION SYSTEM
 
-Upon Patrick H.'s repeated motivation to finally demonstrate a logical triangulation system based on "simple" (non-directional) relations, and moreover on relations that are gradual, herewith I am presenting "MAPTRI" (the "mapping triangulation" system). It is just done as out of regard to a smart and talented friend - it is not "fast" or "large".
+Upon Patrick Hammer's repeated motivation to finally demonstrate a logical triangulation system based on "simple" (non-directional) relations, and moreover on relations that are gradual, herewith I am presenting "MAPTRI" (the "mapping triangulation" system). It is just done as out of regard to a smart and talented friend - it is not "fast" or "large". (I am a great admirer of Patrick's project OpenNARS.)
 
 The structure of knowledge is this:
 
@@ -68,6 +68,50 @@ It is written in Scheme. I recommend to run this in Chez Scheme as it really wor
 > '(I COULD CHANGE THE ENVIRONMENT HERE)
 (I COULD CHANGE THE ENVIRONMENT HERE)
 > (RUN)
+(HUMAN------)()
+
+```
+
+
+UPDATE: a Racket version has been created. It makes parallelization possible (however I may have been too eager to use "pmap" all over the place). The parallelization function "pmap", a threaded version of "map", is a contribution by Andreas Per Olsson. See below for a sample conversation.
+
+
+```
+./racket
+Welcome to Racket v5.3.6.
+> (load "MAPTRI.rkt")
+
+
+(LOGICAL TRIANGULATION NUMERIC VERSION)
+(ENTER (LIST OF UP TO 30 WORDS) TO TALK AND () TO QUIT)
+(ENTER A SYMBOL TO EXIT TO REPL AND (MAIN) OR (RUN) TO RESTART)
+(MOVE TRIDATAN.TXT TO TRIDATA.TXT AFTER CHAT TO LEARN)
+(OTHERWISE DELETE TRIDATAN.TXT AFTER CHATTING)
+(FOR THE HISTORY THE PRESENT AND A PART OF THE KNOWLEDGE ENTER)
+(DUMP)
+(AT ANY TIME AS YOUR INPUT)
+
+(HUMAN------)(WILL YOU NOW OPERATE CORRECTLY)
+(MACHINE----)()
+(HUMAN------)(WHAT WILL YOU NOW TELL ME WILL YOU WORK FINE NOW)
+(MACHINE----)(TELL YOU WILL ME WORK FINE NOW)
+(HUMAN------)(DUMP)
+
+
+(BEGIN DUMP)
+
+(HISTORY)
+(WILL YOU NOW OPERATE CORRECTLY WHAT WILL YOU NOW TELL ME WILL YOU WORK FINE NOW TELL YOU WILL ME WORK FINE NOW)
+
+(HIERARCHISATION OF THE PREVIOUS PRESENT)
+((WILL (YOU (NOW (OPERATE CORRECTLY)))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))))))
+
+(KNOWLEDGE FIRST 50 RELATIONS)
+((200 (TELL (ME (WILL (YOU (WORK (FINE NOW)))))) (TELL (ME (WILL (YOU (WORK (FINE NOW))))))) (200 FINE FINE) (200 ((WILL (YOU (NOW (OPERATE CORRECTLY)))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))))) FINE) (200 ((WILL (YOU (NOW (OPERATE CORRECTLY)))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))))) NOW) (200 ((WILL (YOU (NOW (OPERATE CORRECTLY)))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))))) (TELL (ME (WILL (YOU (WORK (FINE NOW))))))) (200 ((WILL (YOU (NOW (OPERATE CORRECTLY)))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))))) (OPERATE CORRECTLY)) (200 (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))))) (200 (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))) (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))))) (200 (ME (WILL (YOU (WORK (FINE NOW))))) (ME (WILL (YOU (WORK (FINE NOW)))))) (200 (WILL (YOU (WORK (FINE NOW)))) (WILL (YOU (WORK (FINE NOW))))) (200 (FINE NOW) (FINE NOW)) (-200 (WILL (YOU (NOW (OPERATE CORRECTLY)))) (WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))))))) (-200 WHAT (WILL (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))))) (200 WILL WILL) (-200 (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))) (YOU (NOW (OPERATE CORRECTLY)))) (90.85973547876826 (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))) WILL) (-200 (YOU (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW)))))))) (YOU (WORK (FINE NOW)))) (200 YOU YOU) (-200 (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))) (NOW (OPERATE CORRECTLY))) (90.85973547876826 (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))) YOU) (-200 (NOW (TELL (ME (WILL (YOU (WORK (FINE NOW))))))) (WORK (FINE NOW))) (200 NOW NOW) (200 (TELL (ME (WILL (YOU (WORK (FINE NOW)))))) (OPERATE CORRECTLY)) (200 (TELL (ME (WILL (YOU (WORK (FINE NOW)))))) NOW) (200 (TELL (ME (WILL (YOU (WORK (FINE NOW)))))) FINE) (-200 TELL (ME (WILL (YOU (WORK (FINE NOW)))))) (-200 ME (WILL (YOU (WORK (FINE NOW))))) (-200 (YOU (WORK (FINE NOW))) WILL) (200 (YOU (WORK (FINE NOW))) (YOU (NOW (OPERATE CORRECTLY)))) (-200 (WORK (FINE NOW)) YOU) (200 (WORK (FINE NOW)) (NOW (OPERATE CORRECTLY))) (-200 WORK (FINE NOW)) (200 FINE NOW) (200 FINE (OPERATE CORRECTLY)) (200 (YOU (NOW (OPERATE CORRECTLY))) (YOU (NOW (OPERATE CORRECTLY)))) (200 (NOW (OPERATE CORRECTLY)) (NOW (OPERATE CORRECTLY))) (200 (OPERATE CORRECTLY) (OPERATE CORRECTLY)) (200 CORRECTLY CORRECTLY) (-200 WILL (YOU (NOW (OPERATE CORRECTLY)))) (-200 YOU (NOW (OPERATE CORRECTLY))) (200 NOW (OPERATE CORRECTLY)) (200 OPERATE CORRECTLY) (0 () ()) (0 () ()) (0 () ()) (0 () ()) (0 () ()) (0 () ()) (0 () ()) (0 () ()))
+
+(END DUMP CONTINUE CONVERSATION)
+
+
 (HUMAN------)()
 
 ```
