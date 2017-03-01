@@ -1056,14 +1056,14 @@
 ; list-of-input-and-knowledge simply has input and
 ; knowledge "packaged" into one list in order to
 ; perform recursion
-(define (hierarchisation list-of-input-and-knowledge)
+(define (cnt-hierarchisation maxcounter list-of-input-and-knowledge)
   (cond
 
 ; if there is no input to hierarchise, output input and knowledge:
-    ((> 2 (length (car list-of-input-and-knowledge)))
+    ((or (zero? maxcounter) (> 2 (length (car list-of-input-and-knowledge))))
 ; originally, it was just "list-of-input-and-knowledge", but
 ; now I am re-consing it in order to remove the final "listing"
-; of the present - in order to be able to find a plan: (
+; of the present - in order to be able to find a plan: 
     (cons (ecar (car list-of-input-and-knowledge))
           (cdr list-of-input-and-knowledge)))
 
@@ -1072,7 +1072,7 @@
             (triangulate-and-adjust-knowledge
               (car list-of-input-and-knowledge)
               (cadr list-of-input-and-knowledge))))
-      (hierarchisation (list
+      (cnt-hierarchisation (- maxcounter 1) (list
         (generate-hierarchisation
           (map cdr
             (remove-all-collisions (find-potential-vics
@@ -1080,6 +1080,13 @@
               adjusted-knowledge)))
           (car list-of-input-and-knowledge))
         adjusted-knowledge))))))
+
+; INSERTING A COUNTER HERE TO LIMIT CNT-HIERARCHISATION
+; FROM LOOPING INFINITELY. THIS IS MORE OF A DEBUGGING HACK.
+(define (hierarchisation list-of-input-and-knowledge)
+  (cnt-hierarchisation (length (car list-of-input-and-knowledge))
+                       list-of-input-and-knowledge))
+
 ; (hierarchisation '((a b c e f) ((-1 a b) (-2 e f) (-3 b c) (4 f g)
 ; (5 x y) (6 y z) (7 c a) (10 b l) (12 l r) (-40 r g) (-10 b r) (8 a l)
 ; (8 v x) (9 e g) (1 x0 y0) (1 x1 y1) (1 x2 y2) (1 x3 y3) (1 x4 y4)

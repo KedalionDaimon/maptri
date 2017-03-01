@@ -1,3 +1,6 @@
+; ACCELERATED create-hypotheses BY CUTTING OFF OLDER LESS
+; IMPORTANT KNOWLEDGE.
+
 ; IMPLEMENTATION WITH HYPER-CONCLUSIONS FROM TRIANGULATION
 ; The "triangulation"-function has been adjusted to now
 ; generate hyper-conclusions, too.
@@ -357,7 +360,7 @@
     
         (#t '())))
     
-    knowledge)))
+    (takefirst knowledge *limtri*))))
 ; (create-hypotheses '(10 b c) '((1 a b) (2 e f) (3 b c) (4 f g)
 ; (5 x y) (6 y z) (7 c a) (8 v x) (9 e g)))
 ; --> (((0 c a) (1 a b) (10 b c)) ((0 b a) (7 c a) (10 b c)))
@@ -1417,7 +1420,8 @@
   (begin
     (set! *hierarchy* (hierarchisation (list *history* *knowledge*)))
     (set! *present* (car *hierarchy*))
-    (set! *knowledge* (cadr *hierarchy*))
+    (set! *knowledge* (takefirst (cadr *hierarchy*)
+                      *depth-of-short-term-memory*))
     (set! *machine* (do-planning *present* *knowledge*))))
 
 (define (RUN)

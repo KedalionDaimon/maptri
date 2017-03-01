@@ -2,6 +2,8 @@
 ; The "triangulation"-function has been adjusted to now
 ; generate hyper-conclusions, too.
 
+; NOW HYPER-CONCLUSIONS ARE DONE CROSS-HIERARCHICALLY, TOO.
+
 ; NOW UPDATED TO USE "KNOWLEDGE AREAS" INSTEAD OF
 ; ONE KNOWLEDGE CONTINUUM; the "correct" area
 ; is selected based on the present "history".
@@ -86,7 +88,7 @@
 ; ======== VARIABLES ========
 
 ; how deep "tangential" considerations will the system make:
-(define *triangulation-count* 1) ; 2)
+(define *triangulation-count* 2) ; 1) ; 2)
 ; 3 is the maximum to stay within the implementation limit for apply
 ; even in toy experiments.
 
@@ -102,13 +104,13 @@
 ; knowledge that is permitted
 
 ; what is the maximum amount of triangles tolerated per step:
-(define *limtri* 30) ; 100)
+(define *limtri* 200) ; 30) ; 100)
 
 ; until what "depth" of knowledge are triangles sought:
 (define *depth-of-short-term-memory* 30000) ; 300)
 
 ; how many words will be considered in the "history" of the present:
-(define *history-length* 100) ; 30) ; 50)
+(define *history-length* 60); 100) ; 30) ; 50)
 
 ; auxiliary:
 (define (mmb a b) (member a b))
@@ -509,6 +511,115 @@
 ;  (Y (E F) (A B))
 ;  (Z (A B) (C D)))
 
+(define (caddadr x) (car (cddadr x)))
+
+; THIS ADDS CROSS-HIERARCHY TRIANGLES, BASED ON THE
+; BASIC IDEA THAT + A-B=C-A, WHEREBY X:A-B, Y:B=C, Z:C-A,
+; ASSUMING YOU ALREADY GOT + X-Y-Z=X AS PRIMARY
+; HYPER-TRIANGLES, AND NOW YOU ARE SETTING + Y=B=C=Y.
+; THIS IS AN AXIOM! - The presumption behind it is -
+; if an atom is infinitesimally different to another atom, then
+; the "super-atom" of this connection is basically negligible
+; and can be assimilated to the infinitesimally different atoms.
+; This is a sort of "differential equation for triangulation logic".
+(define (hyper-extension triangle)
+  (let ((A (cadar triangle))
+        (B (caddar triangle))
+        (C (cond
+             ((or
+               (equal? (cadar triangle) (cadadr triangle))
+               (equal? (caddar triangle) (cadadr triangle)))
+                 (caddadr triangle))
+             (#t (cadadr triangle))))
+        (X (cdar triangle))
+        (alpha (caar triangle))
+        (Y (cdadr triangle))
+        (beta (caadr triangle))
+        (Z (cdaddr triangle))
+        (gamma (caaddr triangle)))
+    (list
+
+      (list
+        (list beta A (list A B))
+        (list gamma (list A B) (list B C))
+        (list alpha (list B C) A))
+
+      (list
+        (list beta B (list B C))
+        (list gamma (list B C) (list A B))
+        (list alpha (list A B) B))
+
+      (list
+        (list alpha C (list A B))
+        (list gamma (list A B) (list B C))
+        (list beta (list B C) C))
+
+      (list
+        (list beta (list A B) A)
+        (list alpha A B)
+        (list gamma B (list A B)))
+
+      (list
+        (list beta (list A B) A)
+        (list gamma A C)
+        (list alpha C (list A B)))
+
+      (list
+        (list gamma (list A B) B)
+        (list beta B C)
+        (list alpha C (list A B)))
+
+      (list
+        (list beta (list B C) B)
+        (list alpha B A)
+        (list gamma A (list B C)))
+
+      (list
+        (list alpha (list B C) A)
+        (list gamma A C)
+        (list beta C (list B C)))
+
+; CONSIDER ELIMINATION OF THIS CLAUSE,
+; AS IT IS AN "AXIOM" FOR THIS ALL,
+; NOT A "CONCLUSION":
+      (list
+        (list beta (list B C) B)
+        (list beta B C)
+        (list beta C (list B C)))
+
+      (list
+        (list beta (list C A) A)
+        (list alpha A B)
+        (list gamma B (list C A)))
+
+      (list
+        (list gamma (list C A) B)
+        (list beta B C)
+        (list alpha C (list C A)))
+
+      (list
+        (list beta (list C A) A)
+        (list gamma A C)
+        (list alpha C (list C A))))))
+
+; (hyper-conclusion '((alpha a b) (beta b c) (gamma c a)))
+; --> ((alpha (b c) (c a)) (beta (c a) (a b)) (gamma (a b) (b c)))
+; hyper-extension adds to this:
+; (hyper-extension '((alpha a b) (beta b c) (gamma c a)))
+; -->
+; (((beta a (a b)) (gamma (a b) (b c)) (alpha (b c) a))
+;  ((beta b (b c)) (gamma (b c) (a b)) (alpha (a b) b))
+;  ((alpha c (a b)) (gamma (a b) (b c)) (beta (b c) c))
+;  ((beta (a b) a) (alpha a b) (gamma b (a b)))
+;  ((beta (a b) a) (gamma a c) (alpha c (a b)))
+;  ((gamma (a b) b) (beta b c) (alpha c (a b)))
+;  ((beta (b c) b) (alpha b a) (gamma a (b c)))
+;  ((alpha (b c) a) (gamma a c) (beta c (b c)))
+;  ((beta (b c) b) (beta b c) (beta c (b c))) ; that I might eliminate
+;  ((beta (c a) a) (alpha a b) (gamma b (c a)))
+;  ((gamma (c a) b) (beta b c) (alpha c (c a)))
+;  ((beta (c a) a) (gamma a c) (alpha c (c a))))
+
 ; THUNK - using *limtri*
 (define (triangulation list-of-triangles)
   (let ((origtri
@@ -516,12 +627,17 @@
             (takelast list-of-triangles *limtri*))))
     (append
       origtri
-      (map (lambda (x) (hyper-conclusion x)) origtri))))
+      (map (lambda (x) (hyper-conclusion x)) origtri)
+      (apply append (append '() (takelast
+      (map (lambda (x) (takelast (hyper-extension x)
+                                 *limtri*)) origtri)
+                                 *limtri*))))))
 
 ; OPTIONALLY - THAT MAY ACTUALLY BE "TAKEFIRST" ABOVE.
 ; TAKELAST "DIVERSIFIES" TRIANGULATION WITH THE LATER TRIANGLES;
 ; TAKEFIRST "FOCUSES" TRIANGULATION TO THE EARLIER TRIANGLES.
 
+; THIS SAMPLE CALL IS BEFORE EXTENSION - NOW IT FINDS A LOT MORE:
 ; (triangulation (find-all-relations '(a b c e f) '((-1 a b) (-2 e f) (-3 b c)
 ; (4 f g) (5 x y) (6 y z) (7 c a) (8 v x) (9 e g))))
 ; -->
@@ -1511,7 +1627,7 @@
 (define (MAIN)
   (newline)
   (newline)
-  (display '(LOGICAL HYPER-TRIANGULATION I NUMERIC VERSION))
+  (display '(LOGICAL HYPER-TRIANGULATION II NUMERIC VERSION))
   (newline)
   (display '(ENTER (LIST OF UP TO 30 WORDS) TO TALK AND () TO QUIT))
   (newline)

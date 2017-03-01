@@ -1,15 +1,20 @@
-; IMPLEMENTATION WITH HYPER-CONCLUSIONS FROM TRIANGULATION
-; The "triangulation"-function has been adjusted to now
-; generate hyper-conclusions, too.
+; #lang racket
 
-; NOW UPDATED TO USE "KNOWLEDGE AREAS" INSTEAD OF
-; ONE KNOWLEDGE CONTINUUM; the "correct" area
-; is selected based on the present "history".
+(require racket/future)
 
-; (import (rnrs))
-; -- for Chez Scheme
+(define (pmap func alist) ; Sort of pmap
+  (let* ([f (for/list ([i alist]) (future (lambda () (func i ))) )])
+    (for/list ([i f]) (touch i))))
+; parallelization function above by Andreas Per Olsson - THANK YOU!
 
-; everywhere where I use "map", this "map" could be parallelised
+; everywhere where I use "map", this "map" could be
+; theoretically parallelised - but I simply overdid it
+; so to not forget where I used it, I am "marking down" map with "ppmap",
+; though likely I should not have parallelized that:
+
+(define (ppmap func lis) (map func lis))
+; (define (ppmap func lis) (pmap func lis))
+; - to make "all sort of stuff" parallel again.
 
 ; ======== EXPLANATION ========
 
@@ -86,7 +91,7 @@
 ; ======== VARIABLES ========
 
 ; how deep "tangential" considerations will the system make:
-(define *triangulation-count* 1) ; 2)
+(define *triangulation-count* 2)
 ; 3 is the maximum to stay within the implementation limit for apply
 ; even in toy experiments.
 
@@ -108,7 +113,7 @@
 (define *depth-of-short-term-memory* 30000) ; 300)
 
 ; how many words will be considered in the "history" of the present:
-(define *history-length* 100) ; 30) ; 50)
+(define *history-length* 30) ; 50)
 
 ; auxiliary:
 (define (mmb a b) (member a b))
@@ -312,7 +317,7 @@
 ; may actually already exist
 (define (create-hypotheses firstrelation knowledge)
   (cleanse-from-null
-    (map (lambda (x)
+    (ppmap (lambda (x)
       (cond
     
         ((and
@@ -431,7 +436,7 @@
             (remove-all-collisions
               (find-potential-vics paired knowledge))))
       (let ((tri-rel (apply_append (append '() '()
-              (map (lambda (x) (find-single-relation x knowledge))
+              (pmap (lambda (x) (find-single-relation x knowledge))
                    vic-hypotheses)))))
         (cond
 
@@ -490,34 +495,9 @@
 ; (triangulate '((-1 a b) (-7 c a) (-3 b c)))
 ; --> ((3.58257569495584 a b) (-5.267949192431123 c a) (-.3542486889354093 b c))
 
-; This is the new function which inherits triangulation results
-; to higher-level conclusions (currently - only one level up).
-(define (hyper-conclusion triangle)
-  (let ((first-side-atom (cdar triangle))
-        (first-value (caar triangle))
-        (second-side-atom (cdadr triangle))
-        (second-value (caadr triangle))
-        (third-side-atom (cdaddr triangle))
-        (third-value (caaddr triangle)))
-    (list
-      (list first-value second-side-atom third-side-atom)
-      (list second-value third-side-atom first-side-atom)
-      (list third-value first-side-atom second-side-atom))))
-; ((X A B) (Y C D) (Z E F))
-; --> 
-; ((X (C D) (E F))
-;  (Y (E F) (A B))
-;  (Z (A B) (C D)))
-
 ; THUNK - using *limtri*
 (define (triangulation list-of-triangles)
-  (let ((origtri
-          (map (lambda (x) (triangulate x))
-            (takelast list-of-triangles *limtri*))))
-    (append
-      origtri
-      (map (lambda (x) (hyper-conclusion x)) origtri))))
-
+  (ppmap (lambda (x) (triangulate x)) (takelast list-of-triangles *limtri*)))
 ; OPTIONALLY - THAT MAY ACTUALLY BE "TAKEFIRST" ABOVE.
 ; TAKELAST "DIVERSIFIES" TRIANGULATION WITH THE LATER TRIANGLES;
 ; TAKEFIRST "FOCUSES" TRIANGULATION TO THE EARLIER TRIANGLES.
@@ -803,7 +783,7 @@
           knowledge)
         (triangulation
           (apply_append (append '() '()
-            (map (lambda (x)
+            (pmap (lambda (x)
               (find-single-relation x knowledge))
               relations)))))))))
 ; (extend-triangulation 3 '((-1 a b) (-2 e f) (-3 b c) (4 f g) (5 x y)
@@ -901,7 +881,7 @@
 
 ; make sure the values of vic and ana are not blown out of proportion
 (define (cutval knowledge)
-  (map (lambda (x)
+  (ppmap (lambda (x)
           (cond
             ((>= *maxabs* (abs (car x))) x)
             (#t (cons (* (sign (car x)) *maxabs*) (cdr x)))))
@@ -1141,7 +1121,7 @@
 
 (define (find-potential-plans present knowledge)
   (cleanse-from-null
-    (map (lambda (x)
+    (ppmap (lambda (x)
             (cond
 ; YOU CAN TURN OFF (CAR X) BELOW IN ORDER TO ALLOW EASIER PLAN SEARCHES
 ; IF THERE IS A NEGATIVE PLAN IT WILL BE SELECTED LATER AS BEST RESULT
@@ -1188,7 +1168,7 @@
 ; auxiliary: shows #t or () depending on whether a plan has been "confirmed"
 (define (check-possible-plans present potentials knowledge)
     (cond ((null? potentials) '())
-          (#t (map (lambda (x)
+          (#t (pmap (lambda (x)
                 (prove-potential-plan (list present (car x)) knowledge))
                 potentials))))
 
@@ -1353,58 +1333,19 @@
 (define (instinct-list somelist)
   (proto-instinct-list somelist INSTINCTS '()))
 
-; select knowledge area to use:
-(define (set-intersection set1 set2)
-  (cond ((null? set1) '())
-        ((and (not (mmb (car set1) (cdr set1)))
-              (mmb (car set1) set2))
-          (cons (car set1) (set-intersection (cdr set1) set2)))
-        (#t (set-intersection (cdr set1) set2))))
-; (set-intersection '(A B C D E) '(X Y C D Z)) --> (C D)
-
-(define (select-knowledge-area problem candidate knowledge-areas)
-  (cond
-; car of candidate is the history, cadr of candidate - the knowledge
-    ((null? knowledge-areas) (cadr candidate))
-    ((< (length (set-intersection (car candidate) problem))
-        (length (set-intersection (caar knowledge-areas) problem)))
-      (select-knowledge-area problem
-                             (car knowledge-areas)
-                             (cdr knowledge-areas)))
-    (#t (select-knowledge-area problem candidate (cdr knowledge-areas)))))
-
-; (select-knowledge-area
-; '(A B C D E)
-; '((A B X Y Z) (KNOWLEDGE 1))
-; '(((B X Y Z Q) (KNOWLEDGE 2))
-; ((A B C Y Z) (KNOWLEDGE 3))
-; ((A B X C Z) (KNOWLEDGE 4))))
-; -->
-; (KNOWLEDGE 3)
-
 (define *human* '())
 (define *machine* '())
+(define *history* '())
 (define *hierarchy* '())
 (define *present* '())
 (define *history-bkp* '())
-(define *knowledge* '())
 
-(define *knowledge-areas* (with-input-from-file "AREAS.TXT" read))
-
-(define *history* (caar *knowledge-areas*))
+(define *knowledge* (with-input-from-file "TRIDATA.TXT" read))
 
 (define (eexxiitt)
   (begin (newline)
-  (with-output-to-file "AREASN.TXT" (lambda () (display *knowledge-areas*)))
+  (with-output-to-file "TRIDATAN.TXT" (lambda () (display *knowledge*)))
   (exit)))
-
-(define *stop* 'SIG-TERM)
-
-(define (until-terminator lis)
-  (cond ((null? lis) '())
-        ((equal? *stop* (car lis)) '())
-        (#t (cons (car lis) (until-terminator (cdr lis))))))
-; (until-terminator '(A B C D SIG-TERM E F G H)) --> (A B C D)
 
 ; the pseudo-run will adjust the knowledge and propose a machine reply,
 ; but it will NOT "read in" information, it will NOT output data,
@@ -1462,16 +1403,11 @@
           (RUN)))
         (#t
   (begin
-  (set! *history* (takelast (append *history* *human* (list *stop*))
-                            *history-length*))
+  (set! *history* (takelast (append *history* *human*) *history-length*))
 
 ; the below is a "reconsideration" section which
 ; generally should make the system "smarter"
 ; to accelerate (but make less intelligent), you may comment out from here...
-
-  (set! *knowledge* (select-knowledge-area *history*
-                                           (car *knowledge-areas*)
-                                           (cdr *knowledge-areas*)))
 
   (set! *history-bkp* *history*)
 
@@ -1498,11 +1434,8 @@
 ; ... till here
 
   (pseudo-run)
-  (set! *machine* (until-terminator (instinct-list *machine*)))
-  (set! *history* (takelast (append *history* *machine* (list *stop*))
-                            *history-length*))
-  (set! *knowledge-areas* (cons (list *history* *knowledge*)
-                                (reverse (cdr (reverse *knowledge-areas*)))))
+  (set! *machine* (instinct-list *machine*))
+  (set! *history* (takelast (append *history* *machine*) *history-length*))
   (display '(MACHINE----))
   (display *machine*)
   (newline)
@@ -1511,15 +1444,15 @@
 (define (MAIN)
   (newline)
   (newline)
-  (display '(LOGICAL HYPER-TRIANGULATION I NUMERIC VERSION))
+  (display '(LOGICAL TRIANGULATION NUMERIC VERSION))
   (newline)
   (display '(ENTER (LIST OF UP TO 30 WORDS) TO TALK AND () TO QUIT))
   (newline)
   (display '(ENTER A SYMBOL TO EXIT TO REPL AND (MAIN) OR (RUN) TO RESTART))
   (newline)
-  (display '(MOVE AREASN.TXT TO AREAS.TXT AFTER CHAT TO LEARN))
+  (display '(MOVE TRIDATAN.TXT TO TRIDATA.TXT AFTER CHAT TO LEARN))
   (newline)
-  (display '(OTHERWISE DELETE AREASN.TXT AFTER CHATTING))
+  (display '(OTHERWISE DELETE TRIDATAN.TXT AFTER CHATTING))
   (newline)
   (display '(FOR THE HISTORY THE PRESENT AND A PART OF THE KNOWLEDGE ENTER))
   (newline)
