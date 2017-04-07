@@ -115,3 +115,99 @@ Welcome to Racket v5.3.6.
 (HUMAN------)()
 
 ```
+
+UPDATE:
+
+Implemented hyper- and hypo-triangulation as well as cross-triangulation.
+
+Basically, hypo-triangulation is the reverse to hyper-triangulation. With hyper-triangulation, you KNOW a triangle and you DEDUCE something about SUPER-ATOMS to the participating atoms. With hypo-triangulation, you KNOW a triangle and you DEDUCE something about its SUB-ATOMS.
+
+With cross-triangulation, you make it possible that SUPER-ATOMS, TRIANGLE ATOMS and SUB-ATOMS all have relations. - However, cross-triangulation requires a CHANGE to the theory of logical triangulation in that you assume that the super-atom to two equal atoms is AGAIN said atom, that is, if you have B=B, then the super-atom would be again "B" (instead of "Y"). This has many consequences, so if you want to stick with logical triangulation, stick with hyper-hypo-I systems. hyper-hypo-II systems are implementing cross-triangulation.
+
+Details on the theory are here (entry of 7th April 2017):
+
+https://sites.google.com/site/logicaltriangulation/
+
+Sample interactions for hyper-hypo-triangulation:
+
+```
+HYPER-HYPO-I-MAPTRIC-AREAS:
+
+(HUMAN------)(I GREET YOU MACHINE NOW LET US TALK AND TRY YOU OUT)
+(MACHINE----)(GREET ME MACHINE NOW US TALK AND TRY ME OUT)
+(HUMAN------)(I WANT TO TRY OUT HOW YOU DO MORE TRIANGULATIONS THAN USUALLY)
+(MACHINE----)(WANT TO TRY OUT HOW ME DO MORE TRIANGULATIONS THAN USUALLY)
+(HUMAN------)(YES TO TRY YOU OUT IS THE PURPOSE OF THIS EXPERIMENT MACHINE)
+(MACHINE----)(WANT TO TRY OUT HOW ME DO MORE TRIANGULATIONS THAN USUALLY)
+(HUMAN------)(YOU THINK BY MEANS OF LOGICAL TRIANGULATIONS AND WE SHALL TALK)
+(MACHINE----)(HOW ME DO MORE TRIANGULATIONS THAN USUALLY)
+(HUMAN------)(YOU THINK ABOUT MORE THINGS IN EACH EVALUATION CYCLE OF TALK)
+(MACHINE----)(TRY OUT HOW YOU DO TRIANGULATIONS THAN USUALLY)
+(HUMAN------)(YES MACHINE MORE TRIANGULATIONS THAN USUALLY)
+(MACHINE----)(YOU WANT TO TRY OUT HOW ME DO MORE TRIANGULATIONS THAN USUALLY)
+(HUMAN------)()
+
+
+
+(HUMAN------)(A B C A B C A B C)
+(MACHINE----)(A B C)
+(HUMAN------)(X Y Z X Y Z)
+(MACHINE----)(B C)
+(HUMAN------)(A B B A A B B A A)
+(MACHINE----)(B A A B B A A)
+(HUMAN------)(X A Y B X A Y B X A Y B X A Y B)
+(MACHINE----)(C A B C A B C)
+(HUMAN------)(X A Y B X A Y B X A Y B X A Y B)
+(MACHINE----)(C)
+(HUMAN------)(X A Y B X A Y B X A Y B X A Y B)
+(MACHINE----)(C)
+(HUMAN------)(Y B X)
+(MACHINE----)(B)
+(HUMAN------)(X A Y B X A Y B X A Y B X A Y B)
+(MACHINE----)(C)
+(HUMAN------)()
+
+
+```
+
+Sample interactions for cross-triangulation:
+
+```
+HYPER-HYPO-II-MAPTRIC-AREAS (CROSS-TRIANGULATION):
+
+(HUMAN------)(HELLO MACHINE I WANT TO SEE HOW YOU ARE WORKING MACHINE)
+(MACHINE----)(HELLO)
+(HUMAN------)(I CHANGED YOUR REASONING MECHANISM MACHINE I WANT TO TALK NOW)
+(MACHINE----)(WANT TO SEE HOW ME AM/ARE WORKING MACHINE)
+(HUMAN------)(THAT IS WHAT I WANT TO SEE YES INDEED)      
+(MACHINE----)(MACHINE YOU TO SEE HOW ME AM/ARE WORKING MACHINE)
+(HUMAN------)(I AM NOT A MACHINE I AM A HUMAN WHO EXPLORES YOUR REASONING)
+(MACHINE----)()
+(HUMAN------)(YES INDEED MACHINE I WANT TO TRY OUT YOUR NEW REASONING MECHANISM)
+(MACHINE----)(TALK)
+(HUMAN------)(YES THAT IS WHAT I WANT TO DO WITH YOU TO TEACH YOU AND TO TALK)
+(MACHINE----)()
+(HUMAN------)()
+
+
+
+(HUMAN------)(HELLO MACHINE I WANT TO SEE HOW YOU ARE WORKING MACHINE)
+(MACHINE----)(HELLO)
+(HUMAN------)(I CHANGED YOUR REASONING MECHANISM MACHINE I WANT TO TALK NOW)
+(MACHINE----)(WANT TO SEE HOW ME AM/ARE WORKING MACHINE)
+(HUMAN------)(EXACTLY I WANT TO TALK TO YOU AND SEE HOW YOU ARE REASONING)
+(MACHINE----)(HELLO)
+(HUMAN------)(YES TO YOU AS WELL HELLO)
+(MACHINE----)(HELLO)
+(HUMAN------)()
+
+
+
+(HUMAN------)(HELLO MACHINE I WANT TO SEE HOW YOU ARE WORKING MACHINE)
+(MACHINE----)(HELLO)
+(HUMAN------)(I CHANGED YOUR REASONING MECHANISM MACHINE I WANT TO TALK NOW)
+(MACHINE----)(WANT TO SEE HOW ME AM/ARE WORKING MACHINE)
+(HUMAN------)(THAT IS WHAT I WANT TO SEE YES INDEED)      
+(MACHINE----)(MACHINE YOU TO SEE HOW ME AM/ARE WORKING MACHINE)
+(HUMAN------) 
+```
